@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/img/image">
+        <file>image/leftSearchButton.png</file>
+        <file>image/rightSearchButton.png</file>
+        <file>image/SearchIcon.png</file>
+        <file>image/SearchMenuIcon.png</file>
+    </qresource>
+</RCC>
