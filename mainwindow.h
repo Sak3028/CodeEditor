@@ -60,6 +60,9 @@ private slots:
     void FullScreen();
     void Find_and_Replace();
     void on_action_Find_and_replace_triggered();
+    void on_action_ZoomIn_triggered();
+    void on_action_ZoomOut_triggered();
+    void on_action_Restore_Default_Zoom_triggered();
     void on_action_New_triggered();
     void on_action_search_triggered();
     void on_action_Open_triggered();
@@ -83,6 +86,7 @@ private:
     QMenu *formatMenu;
     QMenu *helpMenu;
     QMenu *viewMenu;
+    QMenu *zoomMenu;
     QActionGroup *alignmentGroup;
     QAction *newAct;
     QAction *openAct;
@@ -109,6 +113,9 @@ private:
     QAction *aboutQtAct;
     QAction* m_search_action;
     QAction* find_and_replaceAct;
+    QAction * ZoomInAct;
+    QAction * ZoomOutAct;
+    QAction * RestoreDefaultZoomAct;
 
 
     QCompleter *completer;
@@ -119,6 +126,8 @@ private:
     int m_nRowNumber, m_nColNumber;
     kciSearchWindow* m_search_window;
 public:
+
+   static int defoultFontSize ;
         TextEdit *textEdit;
 };
 

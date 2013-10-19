@@ -21,9 +21,8 @@ Highlighter *MyHighlighter;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-
+    //defoultFontSize = 11;
     m_bChanged = false;
-
     textEdit = new TextEdit();
     completer = new QCompleter(this);
     completer->setModel(modelFromFile("completer.lcp"));
@@ -45,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFixedSize(500,500);
 
 }
+int MainWindow::defoultFontSize = 11;
 
 MainWindow::~MainWindow()
 {
@@ -242,9 +242,15 @@ void MainWindow::on_textEdit_textChanged()
 void MainWindow::italic()
 {
 
+    QFont italicFont = italicAct->font();
+    italicFont.setItalic(true);
+    textEdit->setFont(italicFont);
 }
 void MainWindow::bold()
 {
+    QFont boldFont = boldAct->font();
+    boldFont.setBold(true);
+    textEdit->setFont(boldFont);
 
 }
 void MainWindow::justify()
@@ -304,6 +310,34 @@ void MainWindow::aboutQt()
 {
     QMessageBox::aboutQt(this,tr("About Qt"));
 }
+void MainWindow::on_action_ZoomIn_triggered()
+{
+    if(defoultFontSize<32)
+    {
+    QFont ff = textEdit->font();
+       ff.setPointSize(defoultFontSize++);
+       textEdit->setFont(ff);
+       this->resize(sizeHint());
+   }
+}
+void MainWindow::on_action_ZoomOut_triggered()
+{
+    if(defoultFontSize > 3)
+    {
+    QFont ff = textEdit->font();
+    ff.setPointSize(defoultFontSize--);
+    textEdit->setFont(ff);
+    this->resize(sizeHint());
+}
+}
+void MainWindow::on_action_Restore_Default_Zoom_triggered()
+{
+    defoultFontSize = 11;
+    QFont ff = textEdit->font();
+    ff.setPointSize(defoultFontSize);
+    textEdit->setFont(ff);
+    this->resize(sizeHint());
+}
 
 void MainWindow::Find_and_Replace()
 {
@@ -316,7 +350,6 @@ void MainWindow::on_action_Find_and_replace_triggered()
 {
     QWidget  *w = new QWidget();
     w->setWindowTitle("Find and Replace");
-    QVBoxLayout *v = new QVBoxLayout();
     QVBoxLayout *g = new QVBoxLayout();
     QHBoxLayout * h = new QHBoxLayout();
     QHBoxLayout *h1 = new QHBoxLayout();
@@ -358,6 +391,22 @@ void MainWindow::createActions()
     Always_On_TopAct->setCheckable(true);
     Always_On_TopAct->setStatusTip(tr("Always on Top"));
     connect(Always_On_TopAct, SIGNAL(toggled(bool)), this, SLOT(Alway_on_Top(bool)));
+
+    ZoomInAct = new QAction(tr("Zoom In"),this);
+    ZoomInAct->setStatusTip(tr("Increase Font Size"));
+    ZoomInAct-> setShortcut(Qt::CTRL+Qt::Key_Plus);
+    connect(ZoomInAct,SIGNAL(triggered()),this,SLOT(on_action_ZoomIn_triggered()));
+
+
+    ZoomOutAct = new QAction(tr("Zoom Out"),this);
+    ZoomOutAct->setStatusTip(tr("Decrease Font Size"));
+    ZoomOutAct-> setShortcut(Qt::CTRL+Qt::Key_Minus);
+    connect(ZoomOutAct,SIGNAL(triggered()),this,SLOT(on_action_ZoomOut_triggered()));
+
+
+    RestoreDefaultZoomAct = new QAction(tr("Restore Default Zoom"),this);
+    RestoreDefaultZoomAct->setStatusTip(tr("Increase Font Size"));
+    connect(RestoreDefaultZoomAct,SIGNAL(triggered()),this,SLOT(on_action_Restore_Default_Zoom_triggered()));
 
     FullScreenAct = new QAction(tr("&Full Screen"),this);
     FullScreenAct-> setShortcut(Qt::CTRL+Qt::ALT+Qt::Key_F);
@@ -528,6 +577,10 @@ void MainWindow::createMenus()
     viewMenu = menuBar()->addMenu(tr("View"));
     viewMenu->addAction(Always_On_TopAct);
     viewMenu->addAction(FullScreenAct);
+    zoomMenu = viewMenu->addMenu(tr("Zoom"));
+    zoomMenu->addAction(ZoomInAct);
+    zoomMenu->addAction(ZoomOutAct);
+    zoomMenu->addAction(RestoreDefaultZoomAct);
 
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
