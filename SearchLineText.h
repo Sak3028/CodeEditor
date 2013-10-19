@@ -7,6 +7,7 @@
 #include <QPixmap>
 #include <QHBoxLayout>
 
+
 class kciSearchLineText : public QWidget
 {
     Q_OBJECT

@@ -4,6 +4,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QProcess>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <qset.h>
 #include <qstringlist.h>
 #include <qstringlistmodel.h>
@@ -32,13 +34,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setCentralWidget(textEdit);
     MyHighlighter  = new Highlighter(textEdit->document());
-    textEdit->setFont(QFont("Ubuntu Mono", 13));
+    textEdit->setFont(QFont("Ubuntu Mono", 11));
     textEdit->setTabStopWidth(40);
     createActions();
     createMenus();
+    createTitlebar();
 
     m_search_window = new kciSearchWindow(this);
     m_search_window->hide();
+    this->setFixedSize(500,500);
 
 }
 
@@ -85,6 +89,15 @@ void MainWindow::on_action_New_triggered()
     //textEdit->setText("");
 }
 
+void MainWindow::createTitlebar()
+{
+    //titlebar=titleBar();
+
+#ifndef Q_OS_MACX
+    //setMainButtonIcon(":/img/image/mainwindow.png");
+   // setWindowTitle(windowTitle());
+#endif
+}
 void MainWindow::on_action_Open_triggered()
 {
     OpenFile();
@@ -259,6 +272,75 @@ void MainWindow::center()
 {
 
 }
+void MainWindow::Alway_on_Top(bool bEnable)
+{
+    if (bEnable == true)
+    {
+        setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    }
+    else
+    {
+        setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+    }
+
+    show();
+}
+void MainWindow::FullScreen()
+{
+    if(this->isFullScreen())
+    {
+        //TODO: The title of the menu can be replaced by a QString.
+        FullScreenAct->setText(tr("Enter Full Screen"));
+        this->showNormal();
+    }
+    else
+    {
+       FullScreenAct->setText(tr("Exit Full Screen"));
+        this->showFullScreen();
+    }
+}
+
+void MainWindow::aboutQt()
+{
+    QMessageBox::aboutQt(this,tr("About Qt"));
+}
+
+void MainWindow::Find_and_Replace()
+{
+    QString first = replace_before->text();
+    QString second = replace_after->text();
+    textEdit->setPlainText(textEdit->toPlainText().replace(first,second));
+}
+
+void MainWindow::on_action_Find_and_replace_triggered()
+{
+    QWidget  *w = new QWidget();
+    w->setWindowTitle("Find and Replace");
+    QVBoxLayout *v = new QVBoxLayout();
+    QVBoxLayout *g = new QVBoxLayout();
+    QHBoxLayout * h = new QHBoxLayout();
+    QHBoxLayout *h1 = new QHBoxLayout();
+    QHBoxLayout *h2 = new QHBoxLayout();
+    QLabel *lbl1 = new QLabel("Find");
+    QLabel *lbl2 = new QLabel("Replace with");
+    replace_before = new QLineEdit();
+    replace_after = new QLineEdit();
+    QPushButton *btnreplace = new QPushButton("OK");
+    QPushButton *btncancel = new QPushButton("Cancel");
+    h1->addWidget(replace_before);
+    h1->addWidget(lbl1);
+    h2->addWidget(replace_after);
+    h2->addWidget(lbl2);
+    h->addWidget(btnreplace);
+    h->addWidget(btncancel);
+    g->addLayout(h1);
+    g->addLayout(h2);
+    g->addLayout(h);
+    w->setLayout(g);
+    connect(btnreplace,SIGNAL(clicked()),this,SLOT(Find_and_Replace()));
+    connect(btncancel,SIGNAL(clicked()),w,SLOT(close()));
+    w->show();
+}
 
 void MainWindow::on_action_search_triggered()
 {
@@ -268,9 +350,19 @@ void MainWindow::on_action_search_triggered()
 void MainWindow::createActions()
 {
     m_search_action = new QAction(tr("&Search"), this);
-    //newAct->setShortcuts(QKeySequence::New);
     m_search_action->setStatusTip(tr("Search"));
     connect(m_search_action, SIGNAL(triggered()), this, SLOT(on_action_search_triggered()));
+
+
+    Always_On_TopAct = new QAction(tr("&Always on Top"), this);
+    Always_On_TopAct->setCheckable(true);
+    Always_On_TopAct->setStatusTip(tr("Always on Top"));
+    connect(Always_On_TopAct, SIGNAL(toggled(bool)), this, SLOT(Alway_on_Top(bool)));
+
+    FullScreenAct = new QAction(tr("&Full Screen"),this);
+    FullScreenAct-> setShortcut(Qt::CTRL+Qt::ALT+Qt::Key_F);
+    FullScreenAct->setStatusTip(tr("Show or hide fullscreen mode"));
+    connect(FullScreenAct,SIGNAL(triggered()),this,SLOT(FullScreen()));
 
     newAct = new QAction(tr("&New"), this);
     newAct->setShortcuts(QKeySequence::New);
@@ -318,6 +410,13 @@ void MainWindow::createActions()
     copyAct->setStatusTip(tr("Copy the current selection's contents to the "
                              "clipboard"));
     connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
+
+
+    find_and_replaceAct = new QAction(tr("&Find and Replace"), this);
+   // find_and_replaceAct->setShortcuts(QKeySequence::AddTab);
+    find_and_replaceAct->setStatusTip(tr("Copy the current selection's contents to the "
+                             "clipboard"));
+    connect(find_and_replaceAct, SIGNAL(triggered()), this, SLOT(on_action_Find_and_replace_triggered()));
 
     pasteAct = new QAction(tr("&Paste"), this);
     pasteAct->setShortcuts(QKeySequence::Paste);
@@ -423,6 +522,13 @@ void MainWindow::createMenus()
     editMenu->addSeparator();
     editMenu->addAction(sellectAllAct);
     editMenu->addSeparator();
+    editMenu->addAction(find_and_replaceAct);
+    editMenu->addSeparator();
+
+    viewMenu = menuBar()->addMenu(tr("View"));
+    viewMenu->addAction(Always_On_TopAct);
+    viewMenu->addAction(FullScreenAct);
+
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);

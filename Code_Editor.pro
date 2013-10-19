@@ -8,7 +8,8 @@ SOURCES += main.cpp\
     SearchWindow.cpp \
     StatusCursorInfo.cpp \
     StatusBar.cpp \
-    StatusReWriteInfo.cpp
+    StatusReWriteInfo.cpp \
+    TitleBar.cpp
 
 HEADERS  += mainwindow.h \
     highlighter.h \
@@ -18,7 +19,8 @@ HEADERS  += mainwindow.h \
     SearchWindow.h \
     StatusBar.h \
     StatusCursorInfo.h \
-    StatusReWrite.h
+    StatusReWrite.h \
+    TitleBar.h
 
 RESOURCES += \
     Image.qrc

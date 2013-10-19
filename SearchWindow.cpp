@@ -22,7 +22,7 @@ kciSearchWindow::kciSearchWindow(QWidget *parent) :
 
     //Set Close Button
     closeButton=new QToolButton(this);
-    closeButton->setIcon(QIcon(":/toolbutton/image/Close.png"));
+    closeButton->setIcon(QIcon(":/image/close.png"));
     closeButton->setAutoRaise(true);
     closeButton->setFixedSize(16,26);
     searchLayout->addWidget(closeButton,0,searchLayout->columnCount());

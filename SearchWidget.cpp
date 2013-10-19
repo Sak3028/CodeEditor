@@ -27,7 +27,7 @@ kciSearchWidget::kciSearchWidget(QWidget *parent) :
 
     //Set Icon PushButton
     SearchIcon=new QPushButton(searchText);
-    SearchIcon->setIcon(QIcon(QString(":/img/image/SearchIcon.png")));
+    SearchIcon->setIcon(QIcon(QString(":/image/SearchIcon.png")));
     SearchIcon->setFixedSize(24,24);
     SearchIcon->setContentsMargins(0,0,0,0);
     SearchIcon->setFlat(true);
@@ -73,14 +73,14 @@ kciSearchWidget::kciSearchWidget(QWidget *parent) :
     pal=upButton->palette();
     pal.setColor(QPalette::Button,QColor(0,0,190));
     upButton->setPalette(pal);
-    upButton->setIcon(QIcon(":/img/image/leftSearchButton.png"));
+    upButton->setIcon(QIcon(":/image/leftSearchButton.png"));
     upButton->setAutoRaise(true);
     upButton->setFixedSize(26,26);
     searchLayout->addWidget(upButton,0,3);
     connect(upButton,SIGNAL(clicked()),this,SIGNAL(requireShowPreviousResult()));
     //Set Down Button
     downButton=new QToolButton(this);
-    downButton->setIcon(QIcon(":/img/image/rightSearchButton.png"));
+    downButton->setIcon(QIcon(":/image/rightSearchButton.png"));
     downButton->setAutoRaise(true);
     downButton->setFixedSize(26,26);
     downButton->setPalette(pal);

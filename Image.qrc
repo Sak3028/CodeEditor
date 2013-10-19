@@ -4,5 +4,9 @@
         <file>image/rightSearchButton.png</file>
         <file>image/SearchIcon.png</file>
         <file>image/SearchMenuIcon.png</file>
+        <file>image/close.png</file>
+        <file>image/minimize.png</file>
+        <file>image/Normal.png</file>
+        <file>image/maxmize.png</file>
     </qresource>
 </RCC>
