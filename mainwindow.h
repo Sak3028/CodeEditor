@@ -7,6 +7,7 @@
 #include <qtextcursor.h>
 #include "textedit.h"
 #include "TitleBar.h"
+#include "highlighter.h"
 
 
 
@@ -125,6 +126,7 @@ private:
 
     int m_nRowNumber, m_nColNumber;
     kciSearchWindow* m_search_window;
+    Highlighter * Myhighlighter;
 public:
 
    static int defoultFontSize ;

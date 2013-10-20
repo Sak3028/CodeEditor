@@ -1,77 +1,107 @@
+#include <QtGui>
+
 #include "highlighter.h"
-#include <fstream>
 
-using namespace std;
-
-Highlighter::Highlighter(QTextDocument *parent) : QSyntaxHighlighter(parent)
+//! [0]
+Highlighter::Highlighter(QTextDocument *parent)
+    : QSyntaxHighlighter(parent)
 {
     HighlightingRule rule;
 
-    keyWordFormat.setForeground(Qt::darkGreen);
-    keyWordFormat.setFontWeight(QFont::Bold);
+    keywordFormat.setForeground(Qt::blue);
+    keywordFormat.setFontWeight(QFont::Bold);
+    QStringList keywordPatterns;
+    keywordPatterns << "\\bchar\\b" << "\\bclass\\b" << "\\bconst\\b"
+                    << "\\bdouble\\b" << "\\benum\\b" << "\\bexplicit\\b"
+                    << "\\bfriend\\b" << "\\binline\\b" << "\\bint\\b"
+                    << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
+                    << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
+                    << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
+                    << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"
+                    << "\\btemplate\\b" << "\\btypedef\\b" << "\\btypename\\b"
+                    << "\\bunion\\b" << "\\bunsigned\\b" << "\\bvirtual\\b"
+                    << "\\bvoid\\b" << "\\bvolatile\\b";
+    foreach (const QString &pattern, keywordPatterns) {
+        rule.pattern = QRegExp(pattern);
+        rule.format = keywordFormat;
+        highlightingRules.append(rule);
+//! [0] //! [1]
+    }
+//! [1]
 
-    setTextQueue();
+//! [2]
+    classFormat.setFontWeight(QFont::Bold);
+    classFormat.setForeground(Qt::darkMagenta);
+    rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
+    rule.format = classFormat;
+    highlightingRules.append(rule);
+//! [2]
+
+//! [3]
+    singleLineCommentFormat.setForeground(Qt::red);
+    rule.pattern = QRegExp("//[^\n]*");
+    rule.format = singleLineCommentFormat;
+    highlightingRules.append(rule);
+
+    multiLineCommentFormat.setForeground(Qt::red);
+//! [3]
+
+//! [4]
+    quotationFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("\".*\"");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+//! [4]
+
+//! [5]
+    functionFormat.setFontItalic(true);
+    functionFormat.setForeground(Qt::blue);
+    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+    rule.format = functionFormat;
+    highlightingRules.append(rule);
+//! [5]
+
+//! [6]
+    commentStartExpression = QRegExp("/\\*");
+    commentEndExpression = QRegExp("\\*/");
 }
+//! [6]
 
+//! [7]
 void Highlighter::highlightBlock(const QString &text)
 {
-    foreach(const HighlightingRule &rule, highlightingRules)
-    {
+    foreach (const HighlightingRule &rule, highlightingRules) {
         QRegExp expression(rule.pattern);
-        int nIndex = expression.indexIn(text);
-        while(nIndex >= 0)
-        {
-            int nLength = expression.matchedLength();
-            setFormat(nIndex, nLength, rule.format);
-            nIndex = expression.indexIn(text, nIndex + nLength);
+        int index = expression.indexIn(text);
+        while (index >= 0) {
+            int length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index = expression.indexIn(text, index + length);
         }
     }
+//! [7] //! [8]
     setCurrentBlockState(0);
-}
+//! [8]
 
+//! [9]
+    int startIndex = 0;
+    if (previousBlockState() != 1)
+        startIndex = commentStartExpression.indexIn(text);
 
-void Highlighter::setTextQueue()
-{
-    highlightingRules.clear();
-    HighlightingRule rule;
-    ifstream fin("highlighter.lcp");
-    string strInput;
-    while(fin >> strInput)
-    {
-        if(strInput.substr(0, 6) == "color-")
-        {
-            if(strInput == "color-darkGreen")
-            {
-                keyWordFormat.setForeground(Qt::darkGreen);
-                keyWordFormat.setFontWeight(QFont::Bold);
-            }
-            if(strInput == "color-darkRed")
-            {
-                keyWordFormat.setForeground(Qt::darkRed);
-                keyWordFormat.setFontWeight(QFont::Bold);
-            }
-            if(strInput == "color-darkMagenta")
-            {
-                keyWordFormat.setForeground(Qt::darkMagenta);
-                keyWordFormat.setFontWeight(QFont::Bold);
-            }
-            if(strInput == "color-purple")
-            {
-                keyWordFormat.setForeground(QBrush(QColor::fromRgb(160, 32, 240)));
-                keyWordFormat.setFontWeight(QFont::Bold);
-            }
-            if(strInput == "color-blue")
-            {
-                keyWordFormat.setForeground(Qt::blue);
-                keyWordFormat.setFontWeight(QFont::Normal);
-            }
+//! [9] //! [10]
+    while (startIndex >= 0) {
+//! [10] //! [11]
+        int endIndex = commentEndExpression.indexIn(text, startIndex);
+        int commentLength;
+        if (endIndex == -1) {
+            setCurrentBlockState(1);
+            commentLength = text.length() - startIndex;
+        } else {
+            commentLength = endIndex - startIndex
+                            + commentEndExpression.matchedLength();
         }
-        else
-        {
-            QString pattern = QString(QString::fromLocal8Bit(strInput.c_str()));
-            rule.pattern = QRegExp(pattern);
-            rule.format = keyWordFormat;
-            highlightingRules.append(rule);
-        }
+        setFormat(startIndex, commentLength, multiLineCommentFormat);
+        startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
     }
 }
+//! [11]

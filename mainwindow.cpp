@@ -12,16 +12,13 @@
 #include <ctype.h>
 #include <qcompleter.h>
 #include <QtGui>
-#include "highlighter.h"
 #include "textedit.h"
 #include <qabstractitemmodel.h>
 
-Highlighter *MyHighlighter;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    //defoultFontSize = 11;
     m_bChanged = false;
     textEdit = new TextEdit();
     completer = new QCompleter(this);
@@ -32,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     textEdit->setCompleter(completer);
 
     setCentralWidget(textEdit);
-    MyHighlighter  = new Highlighter(textEdit->document());
+    Myhighlighter  = new Highlighter(textEdit->document());
     textEdit->setFont(QFont("Ubuntu Mono", 11));
     textEdit->setTabStopWidth(40);
     createActions();
@@ -41,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_search_window = new kciSearchWindow(this);
     m_search_window->hide();
-    this->setFixedSize(500,500);
+    this->setFixedSize(640,512);
 
 }
 int MainWindow::defoultFontSize = 11;

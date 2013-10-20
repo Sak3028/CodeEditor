@@ -1,16 +1,23 @@
 #ifndef HIGHLIGHTER_H
 #define HIGHLIGHTER_H
 
-#include <qsyntaxhighlighter.h>
 
+#include <QSyntaxHighlighter>
+
+#include <QHash>
+#include <QTextCharFormat>
+
+QT_BEGIN_NAMESPACE
+class QTextDocument;
+QT_END_NAMESPACE
+
+//! [0]
 class Highlighter : public QSyntaxHighlighter
 {
+    Q_OBJECT
 
 public:
     Highlighter(QTextDocument *parent = 0);
-
-public slots:
-    void setTextQueue();
 
 protected:
     void highlightBlock(const QString &text);
@@ -22,7 +29,16 @@ private:
         QTextCharFormat format;
     };
     QVector<HighlightingRule> highlightingRules;
-    QTextCharFormat keyWordFormat;
-};
 
+    QRegExp commentStartExpression;
+    QRegExp commentEndExpression;
+
+    QTextCharFormat keywordFormat;
+    QTextCharFormat classFormat;
+    QTextCharFormat singleLineCommentFormat;
+    QTextCharFormat multiLineCommentFormat;
+    QTextCharFormat quotationFormat;
+    QTextCharFormat functionFormat;
+};
+//! [0]
 #endif // HIGHLIGHTER_H
